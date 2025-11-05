@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "@/assets/scohub.png";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,6 +45,8 @@ const Header = () => {
     { id: "features", label: "Features" },
     { id: "services", label: "Services" },
     { id: "contact", label: "Contact" },
+    // Marketplace is a separate route/page (not a section on this page)
+    { id: "marketplace", label: "Marketplace", href: "/marketplace" },
   ];
 
   return (
@@ -71,18 +73,29 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => scrollToSection(id)}
-                className={`text-base md:text-lg font-medium transition-colors ${
-                  activeSection === id
-                    ? "text-primary font-semibold"
-                    : "text-foreground hover:text-primary"
-                }`}
-              >
-                {label}
-              </button>
+            {navLinks.map(({ id, label, href }: any) => (
+              href ? (
+                <a
+                  key={id}
+                  href={href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`text-base md:text-lg font-medium transition-colors text-foreground hover:text-primary`}
+                >
+                  {label}
+                </a>
+              ) : (
+                <button
+                  key={id}
+                  onClick={() => scrollToSection(id)}
+                  className={`text-base md:text-lg font-medium transition-colors ${
+                    activeSection === id
+                      ? "text-primary font-semibold"
+                      : "text-foreground hover:text-primary"
+                  }`}
+                >
+                  {label}
+                </button>
+              )
             ))}
             <Button className="ml-3 py-1.5 px-4 text-sm md:text-base">Get Started</Button>
           </nav>
@@ -109,18 +122,29 @@ const Header = () => {
               className="md:hidden py-4 space-y-4 border-t"
               aria-label="Mobile navigation"
             >
-              {navLinks.map(({ id, label }) => (
-                <button
-                  key={id}
-                  onClick={() => scrollToSection(id)}
-                  className={`block w-full text-left text-base md:text-lg transition-colors ${
-                    activeSection === id
-                      ? "text-primary font-semibold"
-                      : "text-foreground hover:text-primary"
-                  }`}
-                >
-                  {label}
-                </button>
+              {navLinks.map(({ id, label, href }: any) => (
+                href ? (
+                  <a
+                    key={id}
+                    href={href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`block w-full text-left text-base md:text-lg transition-colors text-foreground hover:text-primary`}
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <button
+                    key={id}
+                    onClick={() => scrollToSection(id)}
+                    className={`block w-full text-left text-base md:text-lg transition-colors ${
+                      activeSection === id
+                        ? "text-primary font-semibold"
+                        : "text-foreground hover:text-primary"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                )
               ))}
               <Button className="w-full py-2 md:py-2.5 text-sm md:text-base">Get Started</Button>
             </motion.nav>
