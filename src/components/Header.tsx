@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +9,21 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [isScrolled, setIsScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Set header height CSS variable
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const height = headerRef.current?.offsetHeight;
+      if (height) {
+        document.documentElement.style.setProperty('--header-height', `${height}px`);
+      }
+    };
+
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => window.removeEventListener('resize', updateHeaderHeight);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,26 +47,39 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsMenuOpen(false);
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100); // Wait for navigation
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
+    setIsMenuOpen(false);
   };
 
   const navLinks = [
-    { id: "home", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "features", label: "Features" },
-    { id: "services", label: "Services" },
-    { id: "contact", label: "Contact" },
-    // Marketplace is a separate route/page (not a section on this page)
+    { id: "home", label: "Home", section: true },
+    { id: "about", label: "About", section: true },
+    { id: "features", label: "Features", section: true },
+    { id: "services", label: "Services", section: true },
+    { id: "contact", label: "Contact", section: true },
     { id: "marketplace", label: "Marketplace", href: "/marketplace" },
   ];
 
   return (
     <header
+      ref={headerRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
         isScrolled
           ? "bg-background/90 backdrop-blur-md shadow-sm"
@@ -73,31 +102,31 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map(({ id, label, href }: any) => (
+            {navLinks.map(({ id, label, href, section }: any) => (
               href ? (
-                <a
+                <Link
                   key={id}
-                  href={href}
+                  to={href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`text-base md:text-lg font-medium transition-colors text-foreground hover:text-primary`}
+                  className={`text-base md:text-lg font-medium transition-colors text-foreground hover:text-blue-700`}
                 >
                   {label}
-                </a>
+                </Link>
               ) : (
                 <button
                   key={id}
                   onClick={() => scrollToSection(id)}
                   className={`text-base md:text-lg font-medium transition-colors ${
                     activeSection === id
-                      ? "text-primary font-semibold"
-                      : "text-foreground hover:text-primary"
+                      ? "text-blue-700 font-semibold"
+                      : "text-foreground hover:text-blue-700"
                   }`}
                 >
                   {label}
                 </button>
               )
             ))}
-            <Button className="ml-3 py-1.5 px-4 text-sm md:text-base">Get Started</Button>
+            <Button className="ml-3 py-1.5 px-4 text-sm md:text-base bg-blue-700 hover:bg-blue-800 text-white">Get Started</Button>
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -122,31 +151,31 @@ const Header = () => {
               className="md:hidden py-4 space-y-4 border-t"
               aria-label="Mobile navigation"
             >
-              {navLinks.map(({ id, label, href }: any) => (
+              {navLinks.map(({ id, label, href, section }: any) => (
                 href ? (
-                  <a
+                  <Link
                     key={id}
-                    href={href}
+                    to={href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`block w-full text-left text-base md:text-lg transition-colors text-foreground hover:text-primary`}
+                    className={`block w-full text-left text-base md:text-lg transition-colors text-foreground hover:text-blue-700`}
                   >
                     {label}
-                  </a>
+                  </Link>
                 ) : (
                   <button
                     key={id}
                     onClick={() => scrollToSection(id)}
                     className={`block w-full text-left text-base md:text-lg transition-colors ${
                       activeSection === id
-                        ? "text-primary font-semibold"
-                        : "text-foreground hover:text-primary"
+                        ? "text-blue-700 font-semibold"
+                        : "text-foreground hover:text-blue-700"
                     }`}
                   >
                     {label}
                   </button>
                 )
               ))}
-              <Button className="w-full py-2 md:py-2.5 text-sm md:text-base">Get Started</Button>
+              <Button className="w-full py-2 md:py-2.5 text-sm md:text-base bg-blue-700 hover:bg-blue-800 text-white">Get Started</Button>
             </motion.nav>
           )}
         </AnimatePresence>

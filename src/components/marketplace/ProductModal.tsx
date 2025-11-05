@@ -24,28 +24,6 @@ const ProductModal: React.FC<Props> = ({ product, onClose }) => {
     }
   }
 
-  const handleBuyNow = async () => {
-    try {
-      const body = { items: [{ productId: product.id, quantity }], paymentMethod: 'paypack' }
-      const res = await fetch('/api/v1/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      if (!res.ok) throw new Error('Failed to create order')
-      const data = await res.json()
-      // Expecting backend to return a payment URL or similar
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl
-      } else {
-        // fallback: navigate to a checkout page
-        window.location.href = '/checkout'
-      }
-    } catch (err) {
-      console.error(err)
-      alert('Failed to initiate purchase. Please try again later.')
-    }
-  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -76,12 +54,11 @@ const ProductModal: React.FC<Props> = ({ product, onClose }) => {
             <div className="mt-4 flex items-center gap-4">
               <label className="text-sm">Qty</label>
               <input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value || 1)))} className="w-20 border rounded px-2 py-1" />
-              <div className={`text-sm ${product.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>Stock: {product.stock}</div>
+              {/* <div className={`text-sm ${product.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</div> */}
             </div>
 
             <div className="mt-6 flex gap-3">
               <button onClick={handleAddToCart} className="bg-indigo-600 text-white px-4 py-2 rounded">Add to Cart</button>
-              <button onClick={handleBuyNow} className="border px-4 py-2 rounded">Buy Now</button>
               <button onClick={onClose} className="ml-auto text-gray-500">Close</button>
             </div>
           </div>

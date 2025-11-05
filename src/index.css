@@ -112,4 +112,9 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Add global padding for header */
+  main, .page-content {
+    padding-top: var(--header-height, 80px);
+  }
 }
