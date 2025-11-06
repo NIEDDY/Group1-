@@ -7,6 +7,7 @@ import ProductModal from '../components/marketplace/ProductModal'
 import { toast } from '../components/ui/use-toast'
 import { Toaster } from '../components/ui/toaster'
 
+// Filter Dropdown Component
 type FilterDropdownProps = {
   options: string[]
   value: string | null
@@ -19,7 +20,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ options, value, onChang
     <select
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value === '' ? null : e.target.value)}
-      className="border border-gray-300 text-gray-700 rounded-xl px-4 py-2 shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 hover:border-primary"
+      className="border border-[#a8d5b2] text-gray-700 rounded-xl px-4 py-2 shadow-sm bg-white/70 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-[#43a047] transition-all duration-300 hover:border-[#43a047]"
       aria-label={placeholder}
     >
       <option value="">{placeholder ?? 'All'}</option>
@@ -32,6 +33,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ options, value, onChang
   )
 }
 
+// Product Interface
 export interface Product {
   id: string
   title: string
@@ -43,15 +45,15 @@ export interface Product {
   image?: string
 }
 
+// Main Marketplace Component
 const Marketplace: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true) // Start with loading state
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
   const [search, setSearch] = useState('')
   const [selectedCoop, setSelectedCoop] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [cart, setCart] = useState<{ [key: string]: number }>({}) // Track cart items
+  const [cart, setCart] = useState<{ [key: string]: number }>({})
 
   // Load cart from localStorage
   useEffect(() => {
@@ -66,6 +68,7 @@ const Marketplace: React.FC = () => {
     localStorage.setItem('cart', JSON.stringify(cart))
   }, [cart])
 
+  // Mock products (replace image paths with actual local assets)
   useEffect(() => {
     const mockProducts: Product[] = [
       {
@@ -75,25 +78,26 @@ const Marketplace: React.FC = () => {
         price: 14.99,
         stock: 50,
         cooperative: 'Mountain Coffee Co-op',
-        image: 'src/assets/sch-logo.png'
+        image: 'src/assets/coffee-beans.png'
       },
       {
         id: '2',
         title: 'Handwoven Basket',
-        description: 'Traditional handwoven basket made from sustainable materials',
+        description: 'A beautifully handwoven basket crafted by skilled local artisans using natural, sustainable fibers. Ideal for storing household items, adding a touch of rustic charm to your home, or gifting to loved ones. Each basket is unique, reflecting the artisan’s care and traditional weaving techniques passed down through generations.',
         price: 29.99,
         stock: 15,
         cooperative: 'Artisan Crafts Coalition',
-        image: 'https://via.placeholder.com/400x400?text=Handwoven+Basket'
+        image: 'https://www.azizilife.com/wp-content/uploads/2020/02/20191230-Traditional-Grass-Peace-Basket-White-and-Black-450x450.jpg'
+      
       },
       {
         id: '3',
         title: 'Organic Honey',
-        description: 'Pure, raw honey from local beekeepers',
+        description: 'Raw, unprocessed honey collected from local beekeepers who nurture their hives sustainably. Naturally sweet with delicate floral notes, rich in nutrients and antioxidants. Perfect for drizzling over toast, sweetening tea, or using in healthy recipes. Every jar supports the local beekeeping community.',
         price: 9.99,
         stock: 30,
         cooperative: 'Beekeepers United',
-        image: 'https://via.placeholder.com/400x400?text=Organic+Honey'
+        image: 'src/assets/Honey-.jpg'
       },
       {
         id: '4',
@@ -102,7 +106,7 @@ const Marketplace: React.FC = () => {
         price: 6.99,
         stock: 40,
         cooperative: 'Natural Care Co-op',
-        image: 'https://via.placeholder.com/400x400?text=Handmade+Soap'
+        image: 'src/assets/Soap.jpg'
       },
       {
         id: '5',
@@ -111,29 +115,31 @@ const Marketplace: React.FC = () => {
         price: 24.99,
         stock: 20,
         cooperative: 'Local Farmers Alliance',
-        image: 'https://via.placeholder.com/400x400?text=Vegetable+Box'
+        image: 'src/assets/Vegetable-box.jpg'
       },
       {
         id: '6',
         title: 'Artisan Cheese',
-        description: 'Locally produced artisan cheese selection',
+        description: 'Creamy, rich, and full of flavor, perfectly aged to enhance its taste and texture. Ideal for cheese boards, cooking, or gifting. Each piece supports small-scale dairy farmers and sustainable practices',
         price: 19.99,
         stock: 25,
         cooperative: 'Dairy Farmers Co-op',
-        image: 'https://via.placeholder.com/400x400?text=Artisan+Cheese'
+        image: 'src/assets/products/cheese.jpg'
       }
-    ];
+    ]
 
-    setProducts(mockProducts);
-    setLoading(false);
+    setProducts(mockProducts)
+    setLoading(false)
   }, [])
 
+  // Generate cooperative filter options
   const coopOptions = useMemo(() => {
     const setCoops = new Set<string>()
     products.forEach((p) => p.cooperative && setCoops.add(p.cooperative))
     return Array.from(setCoops)
   }, [products])
 
+  // Filter products
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
     return products.filter((p) => {
@@ -147,19 +153,35 @@ const Marketplace: React.FC = () => {
   return (
     <>
       <Header />
-      <div style={{ paddingTop: 'var(--header-height)' }} className="min-h-screen bg-gradient-to-br from-[hsl(217,91%,95%)] via-white to-[hsl(142,76%,95%)] py-10 px-6">
+      {/* 🌱 Modern Organic Gradient + Soft Glass Effect */}
+      <div
+        style={{
+          paddingTop: 'var(--header-height)',
+          backgroundImage: `
+            radial-gradient(circle at 10% 20%, rgba(173, 232, 190, 0.35), transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(173, 216, 230, 0.35), transparent 40%),
+            linear-gradient(to bottom right, #f8fbf9, #eafaf1, #d7f3e3)
+          `
+        }}
+        className="min-h-screen py-12 px-6 bg-fixed bg-cover bg-no-repeat"
+      >
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-10">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-[hsl(217,91%,40%)] to-[hsl(142,76%,36%)] bg-clip-text text-transparent tracking-tight">
-                Marketplace
-              </h1>
-              <p className="text-gray-600">Discover unique products from local cooperatives</p>
-            </div>
+          {/* Header Section */}
+          {/* Title centered at top */}
+          <div className="w-full text-center mb-6">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#2e7d32] to-[#43a047] bg-clip-text text-transparent tracking-tight">
+              Marketplace
+            </h1>
+            <p className="text-gray-700 font-semibold mt-2">Discover unique products from local cooperatives</p>
+          </div>
+
+          {/* Cart button aligned to the right on its own row */}
+          <div className="flex justify-end items-center mb-6">
             <CartButton />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-white/50 p-4 rounded-2xl backdrop-blur-sm border border-indigo-100/50 shadow-sm">
+          {/* Search and Filter Section */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-white/40 p-4 rounded-2xl backdrop-blur-md border border-[#bde5b8] shadow-md">
             <SearchBar
               value={search}
               onChange={setSearch}
@@ -173,35 +195,35 @@ const Marketplace: React.FC = () => {
             />
           </div>
 
+          {/* Product Grid or Loader */}
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="border rounded-xl p-6 animate-pulse bg-white shadow-sm" />
+                <div
+                  key={i}
+                  className="border border-[#a8d5b2] rounded-xl p-6 animate-pulse bg-white/60 shadow-md"
+                />
               ))}
             </div>
           ) : error ? (
             <div className="text-center text-red-600">{error}</div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-xl shadow-sm">
-              <p className="text-gray-600 text-lg">No products found. Try another search or clear filters.</p>
+            <div className="text-center py-16 bg-white/60 rounded-xl shadow-md">
+              <p className="text-gray-600 text-lg">
+                No products found. Try another search or clear filters.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {filtered.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  onView={() => setSelectedProduct(p)}
-                />
+                <ProductCard key={p.id} product={p} onView={() => setSelectedProduct(p)} />
               ))}
             </div>
           )}
 
+          {/* Product Modal */}
           {selectedProduct && (
-            <ProductModal
-              product={selectedProduct}
-              onClose={() => setSelectedProduct(null)}
-            />
+            <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
           )}
         </div>
       </div>
